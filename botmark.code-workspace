@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"RPC.debuggingText": "Debugging file \"{file}\"",
+		"RPC.editingText": "Editing file \"{file}\"",
+		"RPC.idleTimeout": 3600,
+		"RPC.viewingText": "Viewing file \"{file}\""
+	}
+}
