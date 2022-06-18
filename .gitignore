@@ -16,7 +16,7 @@ pids
 *.pid.lock
 
 # Config and Token files
-config.json
+# config.json
 token.json
 GitAuthToken.txt
 client-codes.json
