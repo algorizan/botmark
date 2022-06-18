@@ -34,14 +34,14 @@ const client = new Client({ intents: BOT_INTENTS, partials: BOT_PARTIALS });
 // Create Commands Collection
 client.commands = new Collection();
 
-// Global commands
-const cmdFiles = fs.readdirSync('./global_commands').filter(file => file.endsWith('.js'));
-// Set into Collection
-for (const file of cmdFiles) {
-	const command = require(`./global_commands/${file}`);
-	try { client.commands.set(command.data.name, command); }
-	catch (error) { console.error(`Error pushing ${file}\n\t${error}`); }
-}// Set global commands into Collection - end
+// // Global commands
+// const cmdFiles = fs.readdirSync('./global_commands').filter(file => file.endsWith('.js'));
+// // Set into Collection
+// for (const file of cmdFiles) {
+// 	const command = require(`./global_commands/${file}`);
+// 	try { client.commands.set(command.data.name, command); }
+// 	catch (error) { console.error(`Error pushing ${file}\n\t${error}`); }
+// }// Set global commands into Collection - end
 
 // Guild commands
 const guildCmdFiles = fs.readdirSync('./guild_commands').filter(file => file.endsWith('.js'));
