@@ -10,8 +10,11 @@
 // Imports
 const fs = require('fs');
 const { Client, Collection, Intents } = require('discord.js');// Import the discord.js module.
-const { BOT_TOKEN, PROCESS_ID } = require('./client-codes.json');// Import JSON with login token.
 const { deleteMsg } = require('./delete-button');
+
+// Environment variables
+const BOT_TOKEN = process.env.BOT_TOKEN;
+const PROCESS_ID = process.env.PROCESS_ID;
 
 // Array with Ladon's needed Intents
 const BOT_INTENTS = [
@@ -57,7 +60,7 @@ client.login(BOT_TOKEN);
 
 // On log in
 client.on('ready', () => {
-	process.send('ready');
+	// process.send('ready');
 	console.log(`\n\nLogged in as ${client.user.tag}! \nOn ${new Date().toLocaleString('en-US', { timeZone: 'America/Winnipeg', timeZoneName: 'short' })}\n`);
 	client.user.setPresence({
 		status: 'online',
