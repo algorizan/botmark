@@ -9,7 +9,7 @@
 
 // Imports
 const fs = require('fs');
-// const { getClient } = require('./database-connection');
+// const { getClient } = require('./db/database-connection');
 const { Client, Collection, Intents } = require('discord.js'); // Import the discord.js module.
 const { deleteMsg } = require('./delete-button');
 
