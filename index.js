@@ -13,9 +13,6 @@ const pgClient = require('pg').Client;
 const { Client, Collection, Intents } = require('discord.js'); // Import the discord.js module.
 const { deleteMsg } = require('./delete-button');
 
-// Environment variables
-const PROCESS_ID = 'botmark';
-
 // Array with bot's needed Intents
 const BOT_INTENTS = [
 	Intents.FLAGS.GUILDS,
@@ -201,22 +198,18 @@ client.once('error', error => console.error(`Client ran into an error!\n\t${erro
 
 // ----------------- SIGNALS -----------------------------------------------------------------------------------------------------------
 
-// Signal handling for user termination request
-process.once('SIGINT', () => {
+// Signal handling for termination requests
+process.once('SIGINT', () => { logout(); });
+process.once('SIGTERM', () => { logout(); });
+function logout() {
 	console.log('Client logging out and self-destructing...');
 	client.destroy();
 	postgresClient.end();
-});
-
-// Signal handling for Heroku termination request
-process.once('SIGTERM', () => {
-	console.log('Client logging out and self-destructing...');
-	client.destroy();
-	postgresClient.end();
-});
+}// logout - end
 
 // Signal handling for after deploying commands
 process.on('SIGUSR1', () => {
+	const PROCESS_ID = 'botmark';
 	console.log(`\nRebooting '${PROCESS_ID}' process...`);
 
     // pm2 restart app
