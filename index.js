@@ -9,14 +9,14 @@
 
 // Imports
 const fs = require('fs');
-const { Client, Collection, Intents } = require('discord.js');// Import the discord.js module.
+const { Client, Collection, Intents } = require('discord.js'); // Import the discord.js module.
 const { deleteMsg } = require('./delete-button');
 
 // Environment variables
-const BOT_TOKEN = process.env.BOT_TOKEN;
-const PROCESS_ID = process.env.PROCESS_ID;
+const BOT_TOKEN = process.env.BOT_TOKEN_BOTMARK;
+const PROCESS_ID = 'botmark';
 
-// Array with Ladon's needed Intents
+// Array with bot's needed Intents
 const BOT_INTENTS = [
 	Intents.FLAGS.GUILDS,
 	Intents.FLAGS.GUILD_MESSAGES,
