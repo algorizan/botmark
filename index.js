@@ -13,7 +13,6 @@ const { Client, Collection, Intents } = require('discord.js'); // Import the dis
 const { deleteMsg } = require('./delete-button');
 
 // Environment variables
-const BOT_TOKEN = process.env.BOT_TOKEN_BOTMARK;
 const PROCESS_ID = 'botmark';
 
 // Array with bot's needed Intents
@@ -54,7 +53,7 @@ for (const file of guildCmdFiles) {
 
 
 // Log in with Bot's Token
-client.login(BOT_TOKEN);
+client.login(process.env.BOT_TOKEN_BOTMARK);
 
 // ----------------- DISCORD EVENTS -----------------------------------------------------------------------------------------------------------
 
