@@ -9,6 +9,7 @@
 
 // Imports
 const fs = require('fs');
+const pgClient = require('pg').Client;
 const { Client, Collection, Intents } = require('discord.js'); // Import the discord.js module.
 const { deleteMsg } = require('./delete-button');
 
@@ -27,6 +28,15 @@ const BOT_PARTIALS = [
 	'CHANNEL',
 	'REACTION',
 ];
+
+// Connect to Heroku Postgres database
+const postgresClient = new pgClient({
+	connectionString: process.env.DATABASE_URL_BOTMARK,
+	ssl: {
+		rejectUnauthorized: false
+	}
+});
+postgresClient.connect();
 
 // Create an instance of a Discord client
 const client = new Client({ intents: BOT_INTENTS, partials: BOT_PARTIALS });
@@ -195,6 +205,14 @@ client.once('error', error => console.error(`Client ran into an error!\n\t${erro
 process.once('SIGINT', () => {
 	console.log('Client logging out and self-destructing...');
 	client.destroy();
+	postgresClient.end();
+});
+
+// Signal handling for Heroku termination request
+process.once('SIGTERM', () => {
+	console.log('Client logging out and self-destructing...');
+	client.destroy();
+	postgresClient.end();
 });
 
 // Signal handling for after deploying commands
