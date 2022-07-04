@@ -9,11 +9,14 @@
 
 // Imports
 const fs = require('fs');
-const { Client, Collection, Intents } = require('discord.js');// Import the discord.js module.
-const { BOT_TOKEN, PROCESS_ID } = require('./client-codes.json');// Import JSON with login token.
+const { Client, Collection, Intents } = require('discord.js'); // Import the discord.js module.
 const { deleteMsg } = require('./delete-button');
 
-// Array with Ladon's needed Intents
+// Environment variables
+const BOT_TOKEN = process.env.BOT_TOKEN_BOTMARK;
+const PROCESS_ID = 'botmark';
+
+// Array with bot's needed Intents
 const BOT_INTENTS = [
 	Intents.FLAGS.GUILDS,
 	Intents.FLAGS.GUILD_MESSAGES,
@@ -31,14 +34,14 @@ const client = new Client({ intents: BOT_INTENTS, partials: BOT_PARTIALS });
 // Create Commands Collection
 client.commands = new Collection();
 
-// Global commands
-const cmdFiles = fs.readdirSync('./global_commands').filter(file => file.endsWith('.js'));
-// Set into Collection
-for (const file of cmdFiles) {
-	const command = require(`./global_commands/${file}`);
-	try { client.commands.set(command.data.name, command); }
-	catch (error) { console.error(`Error pushing ${file}\n\t${error}`); }
-}// Set global commands into Collection - end
+// // Global commands
+// const cmdFiles = fs.readdirSync('./global_commands').filter(file => file.endsWith('.js'));
+// // Set into Collection
+// for (const file of cmdFiles) {
+// 	const command = require(`./global_commands/${file}`);
+// 	try { client.commands.set(command.data.name, command); }
+// 	catch (error) { console.error(`Error pushing ${file}\n\t${error}`); }
+// }// Set global commands into Collection - end
 
 // Guild commands
 const guildCmdFiles = fs.readdirSync('./guild_commands').filter(file => file.endsWith('.js'));
@@ -57,7 +60,7 @@ client.login(BOT_TOKEN);
 
 // On log in
 client.on('ready', () => {
-	process.send('ready');
+	// process.send('ready');
 	console.log(`\n\nLogged in as ${client.user.tag}! \nOn ${new Date().toLocaleString('en-US', { timeZone: 'America/Winnipeg', timeZoneName: 'short' })}\n`);
 	client.user.setPresence({
 		status: 'online',
@@ -87,7 +90,7 @@ client.on('ready', () => {
 		}
 	});// guilds cache forEach - end
 	if (joined) {
-		deployCommands();
+		// deployCommands();
 	}
 }); // on ready - end
 
@@ -154,7 +157,7 @@ client.on('guildCreate', guild => {
 			config.GUILD_LIST.push({ id: guild.id, name: guild.name });
 			fs.writeFileSync('./config.json', JSON.stringify(config, null, 4), 'utf8');
 		}
-		deployCommands();
+		// deployCommands();
 
 		console.log(`Joined server: ${guild.name} on ${new Date().toLocaleString('en-US', { timeZone: 'America/Winnipeg', timeZoneName: 'short' })}`);
 	}
@@ -222,13 +225,13 @@ process.on('SIGUSR1', () => {
 
 // ----------------- FUNCTIONS -----------------------------------------------------------------------------------------------------------
 
-// run the deplot-commands.js file, for when joining a new server
-function deployCommands() {
-	try {
-		require('child_process').fork('./deploy-commands.js');
-	}
-	catch (error) {
-		console.error(error);
-		console.log('\nError in deployCommands()');
-	}
-}// deployCommands - end
+// // run the deplot-commands.js file, for when joining a new server
+// function deployCommands() {
+// 	try {
+// 		require('child_process').fork('./deploy-commands.js');
+// 	}
+// 	catch (error) {
+// 		console.error(error);
+// 		console.log('\nError in deployCommands()');
+// 	}
+// }// deployCommands - end

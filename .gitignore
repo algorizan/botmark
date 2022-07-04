@@ -16,7 +16,7 @@ pids
 *.pid.lock
 
 # Config and Token files
-config.json
+# config.json
 token.json
 GitAuthToken.txt
 client-codes.json
@@ -26,6 +26,8 @@ Rubbish/
 # Procfile
 README-template.md
 misc/
+# for heroku-deployed branch only
+deploy-commands.js
 
 # Windows Explorer file
 desktop.ini
