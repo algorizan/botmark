@@ -2,14 +2,14 @@
 
 /**
  * @author: Izan Cuetara Diez (a.k.a. Unstavle)
- * @version: v1.0 | 2021-11-23
+ * @version: v1.1 | 2022-07-04
  */
 
 "use strict";
 
 // Imports
 const fs = require('fs');
-const pgClient = require('pg').Client;
+// const { getClient } = require('./database-connection');
 const { Client, Collection, Intents } = require('discord.js'); // Import the discord.js module.
 const { deleteMsg } = require('./delete-button');
 
@@ -26,14 +26,6 @@ const BOT_PARTIALS = [
 	'REACTION',
 ];
 
-// Connect to Heroku Postgres database
-const postgresClient = new pgClient({
-	connectionString: process.env.DATABASE_URL_BOTMARK,
-	ssl: {
-		rejectUnauthorized: false
-	}
-});
-postgresClient.connect();
 
 // Create an instance of a Discord client
 const client = new Client({ intents: BOT_INTENTS, partials: BOT_PARTIALS });
@@ -204,7 +196,6 @@ process.once('SIGTERM', () => { logout(); });
 function logout() {
 	console.log('Client logging out and self-destructing...');
 	client.destroy();
-	postgresClient.end();
 }// logout - end
 
 // Signal handling for after deploying commands
