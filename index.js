@@ -90,7 +90,7 @@ client.on('ready', () => {
 		}
 	});// guilds cache forEach - end
 	if (joined) {
-		// deployCommands();
+		deployCommands();
 	}
 }); // on ready - end
 
@@ -157,7 +157,7 @@ client.on('guildCreate', guild => {
 			config.GUILD_LIST.push({ id: guild.id, name: guild.name });
 			fs.writeFileSync('./config.json', JSON.stringify(config, null, 4), 'utf8');
 		}
-		// deployCommands();
+		deployCommands();
 
 		console.log(`Joined server: ${guild.name} on ${new Date().toLocaleString('en-US', { timeZone: 'America/Winnipeg', timeZoneName: 'short' })}`);
 	}
@@ -225,13 +225,13 @@ process.on('SIGUSR1', () => {
 
 // ----------------- FUNCTIONS -----------------------------------------------------------------------------------------------------------
 
-// // run the deplot-commands.js file, for when joining a new server
-// function deployCommands() {
-// 	try {
-// 		require('child_process').fork('./deploy-commands.js');
-// 	}
-// 	catch (error) {
-// 		console.error(error);
-// 		console.log('\nError in deployCommands()');
-// 	}
-// }// deployCommands - end
+// run the deplot-commands.js file, for when joining a new server
+function deployCommands() {
+	try {
+		require('child_process').fork('./deploy-commands.js');
+	}
+	catch (error) {
+		console.error(error);
+		console.log('\nError in deployCommands()');
+	}
+}// deployCommands - end
