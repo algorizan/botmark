@@ -11,7 +11,7 @@
 const fs = require('fs');
 // const { getClient } = require('./db/database-connection');
 const { Client, Collection, Intents } = require('discord.js'); // Import the discord.js module.
-const { deleteMsg } = require('./delete-button');
+const { deleteMsg } = require('./src/delete-button');
 
 // Array with bot's needed Intents
 const BOT_INTENTS = [

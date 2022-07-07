@@ -8,7 +8,7 @@
 // If you don't want to require @discordjs/builders, you can replace below "${time(message.createdAt)}" with another way to display the Date, like toLocaleString
 const { time } = require('@discordjs/builders');
 const { MessageEmbed, Message, User, MessageReaction, MessageActionRow } = require('discord.js');
-const { msgDeleteButton } = require('../delete-button');
+const { msgDeleteButton } = require('../src/delete-button');
 const fs = require('fs');
 
 module.exports = {
