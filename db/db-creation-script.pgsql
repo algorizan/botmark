@@ -1,3 +1,9 @@
+/**
+ * @author: Izan Cuetara Diez (a.k.a. Unstavle)
+ * @version: v1.1 | 2022-07-06
+ */
+
+
 -- create database discord_bots_db
 
 
