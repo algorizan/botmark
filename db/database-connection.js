@@ -24,6 +24,7 @@ module.exports = {
 			user: 'postgres',
 			password: '1123581321',
 			database: 'discord_bots_db',
+			// connectionString: 'postgres://postgres:1123581321@localhost:5432/postgres',
 			ssl: false
 		});
 

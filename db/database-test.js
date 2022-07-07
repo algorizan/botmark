@@ -8,27 +8,23 @@
 const pg = require('pg');
 const { getClient } = require('./database-connection');
 
-const client = getClient();
+(async () => {
+	const client = await getClient();
 
-if (client instanceof pg.Client) {
-	client.connect();
+	if (client instanceof pg.Client) {
+		const botid = '911410913138081863';
+		const query = `
+			SELECT * FROM servers
+			WHERE botid = $1
+			;
+		`;
+		const entries = await client.query(query, [botid]);
+		console.log(Object.keys(entries.rows?.[0]).join('\t'));
+		console.log(`${entries.rows.map((r) => Object.values(r).join('\t')).join('\n')}`);
 
-	const query = `
-		CREATE TABLE IF NOT EXISTS botmark_data(
-			id BIGINT PRIMARY KEY NOT NULL,
-			name VARCHAR(32),
-
-		);
-	`;
-	client.query(query, (err, result) => {
-		if (err) throw err;
-
-		for (const row of result) {
-			console.log(JSON.stringify(row));
-		}
-	});
-
-}
-else {
-	console.log('Invalid database client.');
-}
+		await client.end();
+	}
+	else {
+		console.log('Invalid database client.');
+	}
+})();
