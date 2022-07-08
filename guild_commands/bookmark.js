@@ -9,7 +9,7 @@
 const { time } = require('@discordjs/builders');
 const { MessageEmbed, Message, User, MessageReaction, MessageActionRow } = require('discord.js');
 const { msgDeleteButton } = require('../src/delete-button');
-const { incrementBookmarks } = require('../db/database-access');
+const { incrementBookmarks, insertUser } = require('../db/database-access');
 const { dateString } = require('../src/utils');
 
 module.exports = {
@@ -82,6 +82,7 @@ module.exports = {
 			}
 
 			console.log(`${dateString()} - Bookmark created by ${user.tag} in server ${interaction.server.name}`);
+			insertUser(user.client.user.id, interaction.guild.id, user.id);
 			incrementBookmarks(user.client.user.id, interaction.guild.id, user.id);
 		}
 		catch (error) {

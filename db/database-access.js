@@ -112,16 +112,42 @@ module.exports = {
 						;
 					`;
 					await client.query(query, [ botId, serverId, userId ]);
-					console.log(`${dateString()} - Incremented bookmark count for user '${userId}' in server ${serverId}`);
+					console.log(`${dateString()} - Incremented bookmark count for user '${userId}' in serverId ${serverId}`);
 				}
 				catch (error) {
-					console.error(`${dateString()} - Error incrementing bookmark count for user '${userId}' in server ${serverId}`, error);
+					console.error(`${dateString()} - Error incrementing bookmark count for user '${userId}' in serverId ${serverId}`, error);
 				}
 				await client.end();
 			}
 			else {
 				console.log(dateString() + ' - Invalid database client in `incrementBookmarks`.');
 			}
+		}
+	},
+
+	async insertUser(botId, serverId, userId, username) {
+		const client = await getClient();
+		if (client instanceof pg.Client) {
+			try {
+				const selectQuery = `
+					SELECT serverid, botid, userid FROM users
+					WHERE botid = $1 AND serverid = $2 AND userid = $3
+				;`;
+				const entries = await client.query(selectQuery, [ botId, serverId, userId ]);
+
+				if (!entries || entries.rowCount === 0) {
+					const insertQuery = `INSERT INTO users(serverid, botid, userid, name) VALUES($2, $1, $3, $4);`;
+					await client.query(insertQuery, [ botId, serverId, userId, username ]);
+					console.log(`${dateString()} - Inserted user ${username} into serverId ${serverId}`);
+				}
+			}
+			catch (error) {
+				console.error(`${dateString()} - Error inserting user ${username} in serverId ${serverId}`, error);
+			}
+			await client.end();
+		}
+		else {
+			console.log(`${dateString()} - Invalid database client in \`insertUser\`.`);
 		}
 	},
 };
