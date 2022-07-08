@@ -82,8 +82,8 @@ module.exports = {
 			}
 
 			console.log(`${dateString()} - Bookmark created by ${user.tag} in server ${interaction.guild.name}`);
-			insertUser(interaction.guild.id, user.id, user.tag);
-			incrementBookmarks(interaction.guild.id, user.id);
+			await insertUser(interaction.guild.id, user.id, user.tag);
+			await incrementBookmarks(interaction.guild.id, user.id);
 		}
 		catch (error) {
 			console.error(`${dateString()} - Error executing \`${this.data.name}\` command`, error);
