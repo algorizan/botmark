@@ -42,7 +42,7 @@ CREATE TABLE daily_quotes(
 	frequencyH	INTEGER DEFAULT(24),
 	lastQuoteIndex	INTEGER DEFAULT(0),
 	quoteColor	CHAR(7) DEFAULT('#bf5ae6'),
-	timeZone	VARCHAR(30) DEFAULT('America/Winnipeg'),
+	timeZone	VARCHAR(50) DEFAULT('America/Winnipeg'),
 	PRIMARY KEY(serverId, botId),
 	FOREIGN KEY(serverId, botId) REFERENCES servers(serverId, botId) ON DELETE CASCADE
 );
@@ -68,7 +68,7 @@ CREATE TABLE users(
 	name	VARCHAR(32)  DEFAULT('default-san'),
 	levelPts	INTEGER DEFAULT(0),
 	pomodoro	INTEGER[3] DEFAULT(ARRAY[25,5,15]), -- format: {work,break,long break}
-	timeZone	VARCHAR(32),
+	timeZone	VARCHAR(50) DEFAULT('America/Winnipeg'),
     bookmarkCount	INTEGER DEFAULT(0) NOT NULL,
 	PRIMARY KEY(serverId, botId, userId),
 	FOREIGN KEY(serverId, botId) REFERENCES servers(serverId, botId) ON DELETE CASCADE
