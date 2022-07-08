@@ -1,6 +1,6 @@
 /**
  * @author: Izan Cuetara Diez (a.k.a. Unstavle)
- * @version: v1.1 | 2022-07-07
+ * @version: v2.0 | 2022-07-07
  */
 
 "use strict";
