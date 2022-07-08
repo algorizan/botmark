@@ -60,9 +60,17 @@ module.exports = {
 
 		if (client instanceof pg.Client) {
 			try {
-				const query = `INSERT INTO servers(serverid, name, botid) VALUES ($2, $3, $1);`;
-				await client.query(query, [ botId, serverId, serverName ]);
-				console.log(`${dateString()} - Inserted server "${serverName}"`);
+				const selectQuery = `
+					SELECT serverid, botid FROM servers
+					WHERE botid = $1 AND serverid = $2
+				;`;
+				const entries = await client.query(selectQuery, [ botId, serverId ]);
+
+				if(!entries || entries.rowCount === 0) {
+					const insertQuery = `INSERT INTO servers(serverid, name, botid) VALUES ($2, $3, $1);`;
+					await client.query(insertQuery, [ botId, serverId, serverName ]);
+					console.log(`${dateString()} - Inserted server "${serverName}"`);
+				}
 				result = true;
 			}
 			catch (error) {
@@ -82,9 +90,17 @@ module.exports = {
 
 		if (client instanceof pg.Client) {
 			try {
-				const query = `DELETE FROM servers WHERE botid = $1 AND serverid = $2;`;
-				await client.query(query, [ botId, serverId ]);
-				console.log(`${dateString()} - Removed server with id "${serverId}"`);
+				const selectQuery = `
+					SELECT serverid, botid FROM servers
+					WHERE botid = $1 AND serverid = $2
+				;`;
+				const entries = await client.query(selectQuery, [ botId, serverId ]);
+
+				if(entries && entries.rowCount > 0) {
+					const deleteQuery = `DELETE FROM servers WHERE botid = $1 AND serverid = $2;`;
+					await client.query(deleteQuery, [ botId, serverId ]);
+					console.log(`${dateString()} - Removed server with id "${serverId}"`);
+				}
 				result = true;
 			}
 			catch (error) {
