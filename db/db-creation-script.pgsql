@@ -27,6 +27,7 @@ CREATE TABLE servers(
     doReminders	BOOLEAN DEFAULT(true),
     doBookmarks	BOOLEAN DEFAULT(true),
     beMean	BOOLEAN DEFAULT(false),
+    bookmarkCount	INTEGER DEFAULT(0) NOT NULL,
 	PRIMARY KEY(serverId, botId),
 	FOREIGN KEY(botId) REFERENCES bots(clientId) ON DELETE NO ACTION
 );
@@ -68,7 +69,7 @@ CREATE TABLE users(
 	levelPts	INTEGER DEFAULT(0),
 	pomodoro	INTEGER[3] DEFAULT(ARRAY[25,5,15]), -- format: {work,break,long break}
 	timeZone	VARCHAR(32),
-    numBookmarks	INTEGER DEFAULT(0),
+    bookmarkCount	INTEGER DEFAULT(0) NOT NULL,
 	PRIMARY KEY(serverId, botId, userId),
 	FOREIGN KEY(serverId, botId) REFERENCES servers(serverId, botId) ON DELETE CASCADE
 );

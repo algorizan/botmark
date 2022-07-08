@@ -9,7 +9,7 @@
 const { time } = require('@discordjs/builders');
 const { MessageEmbed, Message, User, MessageReaction, MessageActionRow } = require('discord.js');
 const { msgDeleteButton } = require('../src/delete-button');
-const fs = require('fs');
+const { incrementBookmarks } = require('../db/database-access');
 
 module.exports = {
 	data: {
@@ -80,16 +80,8 @@ module.exports = {
 				await interaction.editReply({ content: `OK, the message has been sent to your DM's!`, ephemeral: true });
 			}
 
-			// Finally, increment the number of bookmarks done and output log to console
-			try {
-				console.log(`${new Date().toLocaleString('en-US', { timeZone: 'America/Winnipeg', timeZoneName: 'short' })} - Bookmark created by ${user.tag}`);
-				if (user.id !== '256116869969215491') { // except for me, I don't count >:(
-					const config = JSON.parse(fs.readFileSync('./config.json', 'utf8')); // read in config file
-					config.numBookmarks++; // increment number
-					fs.writeFileSync('./config.json', JSON.stringify(config, null, 4), 'utf8'); // write back to the file
-				}
-			}
-			catch (error) { console.error('Error reading config file and incrementing numBookmarks', error); }
+			console.log(`${new Date().toLocaleString('en-US', { timeZone: 'America/Winnipeg', timeZoneName: 'short' })} - Bookmark created by ${user.tag} in server ${interaction.server.name}`);
+			incrementBookmarks(user.client.user.id, interaction.guild.id, user.id);
 		}
 		catch (error) {
 			console.error(error);

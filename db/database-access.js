@@ -96,4 +96,31 @@ module.exports = {
 		}
 		return result;
 	},
+
+	async incrementBookmarks(botId, serverId, userId) {
+		if (userId !== '256116869969215491') { // except for me, I don't count >:(
+			const client = await getClient();
+			if (client instanceof pg.Client) {
+				try {
+					const query = `
+						UPDATE servers SET bookmarkcount = bookmarkcount + 1
+						WHERE botid = $1 AND serverid = $2
+						;
+						UPDATE users SET bookmarkcount = bookmarkcount + 1
+						WHERE botid = $1 AND serverid = $2 AND userid = $3
+						;
+					`;
+					await client.query(query, [ botId, serverId, userId ]);
+					console.log(`Incremented bookmark count for user '${userId}' in server ${serverId}`);
+				}
+				catch (error) {
+					console.error(`Error incrementing bookmark count for user '${userId}' in server ${serverId}`);
+				}
+				await client.end();
+			}
+			else {
+				console.log('Invalid database client in `incrementBookmarks`.');
+			}
+		}
+	}
 };
