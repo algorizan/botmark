@@ -1,3 +1,4 @@
+/* eslint-disable no-magic-numbers */
 /* eslint-disable no-await-in-loop */
 /**
  * @author: Izan Cuetara Diez (a.k.a. Unstavle)
