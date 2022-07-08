@@ -81,7 +81,7 @@ module.exports = {
 				await interaction.editReply({ content: `OK, the message has been sent to your DM's!`, ephemeral: true });
 			}
 
-			console.log(`${dateString()} - Bookmark created by ${user.tag} in server ${interaction.server.name}`);
+			console.log(`${dateString()} - Bookmark created by ${user.tag} in server ${interaction.guild.name}`);
 			insertUser(interaction.guild.id, user.id);
 			incrementBookmarks(interaction.guild.id, user.id);
 		}
