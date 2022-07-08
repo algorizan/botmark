@@ -70,12 +70,13 @@ client.on('ready', () => {
         // console.log(client.user.presence);
 	console.log(
 		`ClientPresence {
-	status: ${client.user.presence.status}
-	activity: {
-		name: '${client.user.presence.activities[0].name}'
-		type: '${client.user.presence.activities[0].type}'
- 	}
-}`);
+			status: ${client.user.presence.status}
+			activity: {
+				name: '${client.user.presence.activities[0].name}'
+				type: '${client.user.presence.activities[0].type}'
+			}
+		}`
+	);
 
     // Check that the config file's guild list is up to date with the guilds the bot is in, in case it joined while offline.
 	let joined = false;
