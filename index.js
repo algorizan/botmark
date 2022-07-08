@@ -151,12 +151,12 @@ client.on('messageReactionAdd', async (reaction, user) => {
 // Bot joins a new guild (server)
 client.on('guildCreate', async guild => {
 	try {
+		console.log(`${dateString()} - Joined server: ${guild.name}`);
 		const guildList = await db.getServerList();
 		if (!guildList || guildList.find(g => g.serverid === guild.id)) {
 			await db.insertServer(guild.id, guild.name);
 			deployCommands();
 		}
-		console.log(`${dateString()} - Joined server: ${guild.name}`);
 	}
 	catch (error) {
 		console.error(dateString() + ' - Error adding server to database after joining guild.', error);
@@ -221,6 +221,7 @@ process.on('SIGUSR1', () => {
 // run the deplot-commands.js file, for when joining a new server
 function deployCommands() {
 	try {
+		console.log(`${dateString()} - Running deploy-commands.js file...`);
 		require('child_process').fork('./deploy-commands.js');
 	}
 	catch (error) {
