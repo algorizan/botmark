@@ -11,7 +11,7 @@ module.exports = {
 		wait_ready: true,
 		listen_timeout: 10000,
 		kill_timeout: 3000,
-		instances: "max",
+		instances: 1,
 		env: {
 			NODE_ENV: "development",
 			PROCESS_ID: "botmark",
