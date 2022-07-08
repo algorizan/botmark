@@ -2,7 +2,7 @@
 /* eslint-disable no-await-in-loop */
 /**
  * @author: Izan Cuetara Diez (a.k.a. Unstavle)
- * @version: v1.0 | 2021-11-23
+ * @version: v1.1 | 2022-07-08
  */
 
 "use strict";
@@ -10,7 +10,6 @@
 const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v9');
 const fs = require('fs');
-const { CLIENT_ID, PROCESS_ID } = require('./client-codes.json');
 const { getServerList } = require('./db/database-access');
 const { dateString } = require('../src/utils');
 const pm2 = require('pm2');
@@ -19,7 +18,7 @@ const pm2 = require('pm2');
 const guildCommands = [], globalCommands = [];
 // Get all the command files from the appropriate directories
 const guildCmdFiles = fs.readdirSync('./guild_commands').filter(file => file.endsWith('.js'));
-const globalCmdFiles = fs.readdirSync('./global_commands').filter(file => file.endsWith('.js'));
+// const globalCmdFiles = fs.readdirSync('./global_commands').filter(file => file.endsWith('.js'));
 
 // Push all the guild commands to their array
 for (const file of guildCmdFiles) {
@@ -27,12 +26,12 @@ for (const file of guildCmdFiles) {
 	try { guildCommands.push(command.data.toJSON()); }
 	catch(error) { console.error(`${dateString()} - Error pushing ${file} file to guildCommands array`, error); }
 }
-// Push all the global commands to their array
-for (const file of globalCmdFiles) {
-	const command = require(`./global_commands/${file}`);
-	try { globalCommands.push(command.data.toJSON()); }
-	catch(error) { console.error(`${dateString()} - Error pushing ${file} file to globalCommands array`, error); }
-}
+// // Push all the global commands to their array
+// for (const file of globalCmdFiles) {
+// 	const command = require(`./global_commands/${file}`);
+// 	try { globalCommands.push(command.data.toJSON()); }
+// 	catch(error) { console.error(`${dateString()} - Error pushing ${file} file to globalCommands array`, error); }
+// }
 
 const rest = new REST({ version: '9' }).setToken(process.env.BOT_TOKEN_BOTMARK);
 
@@ -42,17 +41,17 @@ const rest = new REST({ version: '9' }).setToken(process.env.BOT_TOKEN_BOTMARK);
 
 		// Global commands
 		await rest.put(
-			Routes.applicationCommands(CLIENT_ID),
+			Routes.applicationCommands(process.env.CLIENT_ID),
 			{ body: globalCommands },
 		);
 		console.log(dateString() + ' - - Registered global commands.');
 
 		// Guild commands
-		const guildList = await getServerList(CLIENT_ID);
+		const guildList = await getServerList(process.env.CLIENT_ID);
 		for (const guild of guildList) {
 			// for all files in /guild_commands
 			await rest.put(
-				Routes.applicationGuildCommands(CLIENT_ID, guild.serverid),
+				Routes.applicationGuildCommands(process.env.CLIENT_ID, guild.serverid),
 				{ body: guildCommands },
 			);
 			console.log(`${dateString()} - - Registered commands for server: ${guild.name}`);
@@ -67,12 +66,12 @@ const rest = new REST({ version: '9' }).setToken(process.env.BOT_TOKEN_BOTMARK);
 
 // pm2 restart app
 setTimeout(() => {
-	console.log(`\n${dateString()} - Attempting to connect to pm2 to restart '${PROCESS_ID}' process...`);
+	console.log(`\n${dateString()} - Attempting to connect to pm2 to restart '${process.env.PROCESS_ID}' process...`);
 
 	// connect to pm2 process manager
 	pm2.connect((err) => {
 		if (err) {
-			console.error(`\n\n${dateString()} - Something went wrong when connecting to '${PROCESS_ID}' process from deploy-commands.js.`, err);
+			console.error(`\n\n${dateString()} - Something went wrong when connecting to '${process.env.PROCESS_ID}' process from deploy-commands.js.`, err);
 			process.exit(2);
 		}
 
@@ -84,7 +83,7 @@ setTimeout(() => {
 			}
 
 			// Find the process with the right name and send it the SIGUSR1 signal that will make it reboot
-			const processDescription = list.find(proc => proc.name === PROCESS_ID);
+			const processDescription = list.find(proc => proc.name === process.env.PROCESS_ID);
 			if (processDescription && processDescription.pm2_env.status === "online") {
 				console.log(`${dateString()} - Now restarting ${processDescription.name} process.`);
 				process.kill(processDescription.pid, 'SIGUSR1');

@@ -2,7 +2,7 @@
 
 /**
  * @author: Izan Cuetara Diez (a.k.a. Unstavle)
- * @version: v1.1 | 2022-07-04
+ * @version: v1.1 | 2022-07-08
  */
 
 "use strict";
@@ -59,7 +59,7 @@ client.login(process.env.BOT_TOKEN_BOTMARK);
 
 // On log in
 client.on('ready', async () => {
-	// process.send('ready');
+	process.send('ready');
 	console.log(`\n\nLogged in as ${client.user.tag}! \nOn ${dateString()}\n`);
 	client.user.setPresence({
 		status: 'online',
@@ -81,10 +81,10 @@ client.on('ready', async () => {
 
     // Check that the database's server list is up to date with the guilds the bot is in, in case it joined while offline.
 	let joined = false;
-	const guildList = await db.getServerList(client.user.id);
+	const guildList = await db.getServerList();
 	client.guilds.cache.forEach((guild, guildId) => {
 		if (!guildList || guildList.find(g => g.serverid === guildId) === undefined) {
-			db.insertServer(client.user.id, guildId, guild.name)
+			db.insertServer(guildId, guild.name)
 				.then((inserted) => {
 					joined = inserted;
 				})
@@ -151,9 +151,9 @@ client.on('messageReactionAdd', async (reaction, user) => {
 // Bot joins a new guild (server)
 client.on('guildCreate', async guild => {
 	try {
-		const guildList = await db.getServerList(client.user.id);
+		const guildList = await db.getServerList();
 		if (!guildList || guildList.find(g => g.serverid === guild.id)) {
-			await db.insertServer(client.user.id, guild.id, guild.name);
+			await db.insertServer(guild.id, guild.name);
 			deployCommands();
 		}
 		console.log(`${dateString()} - Joined server: ${guild.name}`);
@@ -166,9 +166,9 @@ client.on('guildCreate', async guild => {
 // Bot leaves a guild (server)
 client.on('guildDelete', async guild => {
 	try {
-		const guildList = await db.getServerList(client.user.id);
+		const guildList = await db.getServerList();
 		if (!guildList || guildList.find(g => g.serverid === guild.id)) {
-			await db.removeServer(client.user.id, guild.id);
+			await db.removeServer(guild.id);
 		}
 		console.log(`${dateString()} - Left server: ${guild.name}`);
 	}
@@ -193,8 +193,7 @@ function logout() {
 
 // Signal handling for after deploying commands
 process.on('SIGUSR1', () => {
-	const PROCESS_ID = 'botmark';
-	console.log(`\n${dateString()} - Rebooting '${PROCESS_ID}' process...`);
+	console.log(`\n${dateString()} - Rebooting '${process.env.PROCESS_ID}' process...`);
 
     // pm2 restart app
 	setTimeout(() => {
@@ -205,7 +204,7 @@ process.on('SIGUSR1', () => {
 				process.exit(2);
 			}
 
-			pm2.restart(PROCESS_ID, (err) => {
+			pm2.restart(process.env.PROCESS_ID, (err) => {
 				pm2.disconnect();
 				if (err) {
 					console.error(`\n${dateString()} - Something went wrong when restarting and disconnecting from pm2 process.`, err);
@@ -225,6 +224,6 @@ function deployCommands() {
 		require('child_process').fork('./deploy-commands.js');
 	}
 	catch (error) {
-		console.error(`\n${dateString()} - Error in deployCommands()`, error);
+		console.error(`\n${dateString()} - Error forking deployCommands()`, error);
 	}
 }// deployCommands - end

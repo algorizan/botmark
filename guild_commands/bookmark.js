@@ -1,6 +1,6 @@
 /**
  * @author: Izan Cuetara Diez (a.k.a. Unstavle)
- * @version: v1.0 | 2021-11-23
+ * @version: v1.0 | 2022-07-08
  */
 
 "use strict";
@@ -82,8 +82,8 @@ module.exports = {
 			}
 
 			console.log(`${dateString()} - Bookmark created by ${user.tag} in server ${interaction.server.name}`);
-			insertUser(user.client.user.id, interaction.guild.id, user.id);
-			incrementBookmarks(user.client.user.id, interaction.guild.id, user.id);
+			insertUser(interaction.guild.id, user.id);
+			incrementBookmarks(interaction.guild.id, user.id);
 		}
 		catch (error) {
 			console.error(`${dateString()} - Error executing \`${this.data.name}\` command`, error);
