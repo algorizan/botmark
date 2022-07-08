@@ -153,7 +153,7 @@ client.on('guildCreate', async guild => {
 	try {
 		const guildList = await db.getServerList(client.user.id);
 		if (!guildList || guildList.find(g => g.serverid === guild.id)) {
-			await db.removeServer(client.user.id, guild.id);
+			await db.insertServer(client.user.id, guild.id, guild.name);
 			deployCommands();
 		}
 		console.log(`${dateString()} - Joined server: ${guild.name}`);
