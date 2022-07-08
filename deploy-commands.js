@@ -11,7 +11,7 @@ const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v9');
 const fs = require('fs');
 const { getServerList } = require('./db/database-access');
-const { dateString } = require('../src/utils');
+const { dateString } = require('./src/utils');
 const pm2 = require('pm2');
 
 // Arrays in which to send all commands
