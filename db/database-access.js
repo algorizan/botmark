@@ -9,6 +9,21 @@ const pg = require('pg');
 const { getClient } = require('./database-connection');
 
 module.exports = {
+	async getServerList(botId) {
+		let result = null;
+		const client = await getClient();
+
+		if (client instanceof pg.Client) {
+			const entries = await client.query('SELECT serverid, name FROM servers WHERE botid = $1', [botId]);
+			result = entries?.rows;
+		}
+		else {
+			console.log('Invalid database client in `getServerList`.');
+		}
+
+		return result;
+	},
+
 	async selectServer(botId, serverId) {
 		let result = false;
 		const client = await getClient();
@@ -24,7 +39,7 @@ module.exports = {
 				// console.log(Object.keys(entries.rows?.[0]).join('\t'));
 				// console.log(`${entries.rows.map((r) => Object.values(r).join('\t')).join('\n')}`);
 
-				result = entries;
+				result = entries?.rows;
 			}
 			catch (error) {
 				console.error(`Error selecting serverId ${serverId}\n${error}`);
@@ -33,7 +48,7 @@ module.exports = {
 			await client.end();
 		}
 		else {
-			console.log('Invalid database client.');
+			console.log('Invalid database client in `selectServer`.');
 		}
 		return result;
 	},
@@ -55,7 +70,7 @@ module.exports = {
 			await client.end();
 		}
 		else {
-			console.log('Invalid database client.');
+			console.log('Invalid database client in `insertServer`.');
 		}
 		return result;
 	},
@@ -77,7 +92,7 @@ module.exports = {
 			await client.end();
 		}
 		else {
-			console.log('Invalid database client.');
+			console.log('Invalid database client in `removeServer`.');
 		}
 		return result;
 	},

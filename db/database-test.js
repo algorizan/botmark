@@ -12,5 +12,5 @@ const db = require('./database-access');
 	const homeServer = '528382510455848963';
 
 	const entries = await db.selectServer(botid, homeServer);
-	console.log(entries.rows[0]?.name + '\n' + entries.rows[0]?.serverid);
+	console.log(entries[0]?.name + '\n' + entries[0]?.serverid);
 })();
