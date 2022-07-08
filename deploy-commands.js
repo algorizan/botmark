@@ -9,8 +9,8 @@
 const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v9');
 const fs = require('fs');
-const { BOT_TOKEN, CLIENT_ID, PROCESS_ID } = require('./client-codes.json');
-const { GUILD_LIST } = require('./config.json');
+const { CLIENT_ID, PROCESS_ID } = require('./client-codes.json');
+const { getServerList } = require('./db/database-access');
 const pm2 = require('pm2');
 
 // Arrays in which to send all commands
@@ -32,7 +32,7 @@ for (const file of globalCmdFiles) {
 	catch(error) { console.error(`Error pushing ${file} file to globalCommands array`, error); }
 }
 
-const rest = new REST({ version: '9' }).setToken(BOT_TOKEN);
+const rest = new REST({ version: '9' }).setToken(process.env.BOT_TOKEN_BOTMARK);
 
 (async () => {
 	try {
@@ -46,10 +46,11 @@ const rest = new REST({ version: '9' }).setToken(BOT_TOKEN);
 		console.log('- Registered global commands.');
 
 		// Guild commands
-		for (const guild of GUILD_LIST) {
+		const guildList = await getServerList(CLIENT_ID);
+		for (const guild of guildList) {
 			// for all files in /guild_commands
 			await rest.put(
-				Routes.applicationGuildCommands(CLIENT_ID, guild.id),
+				Routes.applicationGuildCommands(CLIENT_ID, guild.serverid),
 				{ body: guildCommands },
 			);
 			console.log(`- Registered commands for server: ${guild.name}`);
