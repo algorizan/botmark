@@ -81,15 +81,17 @@ client.on('ready', async () => {
 
     // Check that the database's server list is up to date with the guilds the bot is in, in case it joined while offline.
 	const guildList = await db.getServerList();
-	client.guilds.cache.forEach((guild, guildId) => {
+	client.guilds.cache.forEach(async (guild, guildId) => {
 		if (!guildList || guildList.find(g => g.serverid === guildId) === undefined) {
-			db.insertServer(guildId, guild.name)
-				.then((inserted) => {
-					if (inserted) {
-						deployCommands();
-					}
-				})
-				.catch(err => console.error(`${dateString()} - Error inserting server into db during login check.`, err));
+			try {
+				const inserted = await db.insertServer(guildId, guild.name);
+				if (inserted) {
+					deployCommands();
+				}
+			}
+			catch (error) {
+				console.error(`${dateString()} - Error inserting server into db during login check.`, error);
+			}
 		}
 	});// guilds cache forEach - end
 }); // on ready - end
