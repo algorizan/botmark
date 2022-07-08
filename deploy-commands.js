@@ -15,7 +15,8 @@ const { dateString } = require('./src/utils');
 const pm2 = require('pm2');
 
 // Arrays in which to send all commands
-const guildCommands = [], globalCommands = [];
+const guildCommands = [];
+// const globalCommands = [];
 // Get all the command files from the appropriate directories
 const guildCmdFiles = fs.readdirSync('./guild_commands').filter(file => file.endsWith('.js'));
 // const globalCmdFiles = fs.readdirSync('./global_commands').filter(file => file.endsWith('.js'));
@@ -40,12 +41,12 @@ const PROCESS_ID = 'botmark';
 	try {
 		console.log(`\n${dateString()} - Started reloading application commands.`);
 
-		// Global commands
-		await rest.put(
-			Routes.applicationCommands(process.env.CLIENT_ID),
-			{ body: globalCommands },
-		);
-		console.log(dateString() + ' - - Registered global commands.');
+		// // Global commands
+		// await rest.put(
+		// 	Routes.applicationCommands(process.env.CLIENT_ID),
+		// 	{ body: globalCommands },
+		// );
+		// console.log(dateString() + ' - - Registered global commands.');
 
 		// Guild commands
 		const guildList = await getServerList(process.env.CLIENT_ID);
