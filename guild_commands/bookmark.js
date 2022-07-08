@@ -81,9 +81,9 @@ module.exports = {
 				await interaction.editReply({ content: `OK, the message has been sent to your DM's!`, ephemeral: true });
 			}
 
-			console.log(`${dateString()} - Bookmark created by ${user.tag} in server ${interaction.guild.name}`);
-			await insertUser(interaction.guild.id, user.id, user.tag);
-			await incrementBookmarks(interaction.guild.id, user.id);
+			console.log(`${dateString()} - Bookmark created by ${user.tag} in server ${message.guild.name}`);
+			await insertUser(message.guildId, user.id, user.tag);
+			await incrementBookmarks(message.guildId, user.id);
 		}
 		catch (error) {
 			console.error(`${dateString()} - Error executing \`${this.data.name}\` command`, error);
