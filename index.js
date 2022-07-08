@@ -9,7 +9,7 @@
 
 // Imports
 const fs = require('fs');
-// const { getClient } = require('./db/database-connection');
+const db = require('./db/database-access');
 const { Client, Collection, Intents } = require('discord.js'); // Import the discord.js module.
 const { deleteMsg } = require('./src/delete-button');
 
@@ -57,7 +57,7 @@ client.login(process.env.BOT_TOKEN_BOTMARK);
 // ----------------- DISCORD EVENTS -----------------------------------------------------------------------------------------------------------
 
 // On log in
-client.on('ready', () => {
+client.on('ready', async () => {
 	// process.send('ready');
 	console.log(`\n\nLogged in as ${client.user.tag}! \nOn ${new Date().toLocaleString('en-US', { timeZone: 'America/Winnipeg', timeZoneName: 'short' })}\n`);
 	client.user.setPresence({
@@ -78,14 +78,16 @@ client.on('ready', () => {
 		}`
 	);
 
-    // Check that the config file's guild list is up to date with the guilds the bot is in, in case it joined while offline.
+    // Check that the database's server list is up to date with the guilds the bot is in, in case it joined while offline.
 	let joined = false;
-	const config = JSON.parse(fs.readFileSync('./config.json', 'utf8')); // read in config file
+	const guildList = await db.getServerList(client.user.id);
 	client.guilds.cache.forEach((guild, guildId) => {
-		if (config.GUILD_LIST.find(g => g.id === guildId) === undefined) {
-			config.GUILD_LIST.push({ id: guildId, name: guild.name });
-			fs.writeFileSync('./config.json', JSON.stringify(config, null, 4), 'utf8');
-			joined = true;
+		if (!guildList || guildList.find(g => g.serverid === guildId) === undefined) {
+			db.insertServer(client.user.id, guildId, guild.name)
+				.then((inserted) => {
+					joined = inserted;
+				})
+				.catch(err => console.error(`Error inserting server into db during login check.`, err));
 		}
 	});// guilds cache forEach - end
 	if (joined) {
@@ -147,41 +149,31 @@ client.on('messageReactionAdd', async (reaction, user) => {
 }); // on messageReactionAdd - end
 
 // Bot joins a new guild (server)
-client.on('guildCreate', guild => {
+client.on('guildCreate', async guild => {
 	try {
-		const config = JSON.parse(fs.readFileSync('./config.json', 'utf8')); // read in config file
-
-		// if the guild is not already in the config file's list of guilds, add it to it
-		if (!config.GUILD_LIST.find(g => g.id === guild.id)) {
-			config.GUILD_LIST.push({ id: guild.id, name: guild.name });
-			fs.writeFileSync('./config.json', JSON.stringify(config, null, 4), 'utf8');
+		const guildList = await db.getServerList(client.user.id);
+		if (!guildList || guildList.find(g => g.serverid === guild.id)) {
+			await db.removeServer(client.user.id, guild.id);
+			deployCommands();
 		}
-		deployCommands();
-
-		console.log(`Joined server: ${guild.name} on ${new Date().toLocaleString('en-US', { timeZone: 'America/Winnipeg', timeZoneName: 'short' })}`);
+		console.log(`Joined server: ${guild.name} on ${dateString()}`);
 	}
 	catch (error) {
-		console.log('Error adding guild to config guild list after joining server.');
-		console.error(error);
+		console.error(dateString() + ' - Error adding server to database after joining guild.', error);
 	}
 }); // on guildCreate - end
 
 // Bot leaves a guild (server)
-client.on('guildDelete', guild => {
+client.on('guildDelete', async guild => {
 	try {
-		const config = JSON.parse(fs.readFileSync('./config.json', 'utf8')); // read in config file
-
-			// if the guild is in the config file's list of guilds, remove it from it
-		const index = config.GUILD_LIST.findIndex(g => g.id === guild.id);
-		if (index !== -1) {
-			config.GUILD_LIST.splice(index, 1);
-			fs.writeFileSync('./config.json', JSON.stringify(config, null, 4), 'utf8');
+		const guildList = await db.getServerList(client.user.id);
+		if (!guildList || guildList.find(g => g.serverid === guild.id)) {
+			await db.removeServer(client.user.id, guild.id);
 		}
-
-		console.log(`Left server: ${guild.name} on ${new Date().toLocaleString('en-US', { timeZone: 'America/Winnipeg', timeZoneName: 'short' })}`);
+		console.log(`Left server: ${guild.name} on ${dateString()}`);
 	}
 	catch (error) {
-		console.error('Error removing guild from config guild list after leaving server.', error);
+		console.error(dateString() + ' - Error removing server from database after leaving guild.', error);
 	}
 }); // on guildCreate - end
 
