@@ -119,15 +119,18 @@ module.exports = {
 			const client = await getClient();
 			if (client instanceof pg.Client) {
 				try {
-					const query = `
+					const queryServers = `
 						UPDATE servers SET bookmarkcount = bookmarkcount + 1
 						WHERE botid = $1 AND serverid = $2
 						;
+					`;
+					await client.query(queryServers, [ process.env.CLIENT_ID, serverId ]);
+					const queryUsers = `
 						UPDATE users SET bookmarkcount = bookmarkcount + 1
 						WHERE botid = $1 AND serverid = $2 AND userid = $3
 						;
 					`;
-					await client.query(query, [ process.env.CLIENT_ID, serverId, userId ]);
+					await client.query(queryUsers, [ process.env.CLIENT_ID, serverId, userId ]);
 					console.log(`${dateString()} - Incremented bookmark count for user '${userId}' in serverId ${serverId}`);
 				}
 				catch (error) {
