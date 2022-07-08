@@ -7,6 +7,7 @@
 
 const pg = require('pg');
 const { getClient } = require('./database-connection');
+const { dateString } = require('../src/utils');
 
 module.exports = {
 	async getServerList(botId) {
@@ -18,7 +19,7 @@ module.exports = {
 			result = entries?.rows;
 		}
 		else {
-			console.log('Invalid database client in `getServerList`.');
+			console.log(dateString() + ' - Invalid database client in `getServerList`.');
 		}
 
 		return result;
@@ -42,13 +43,13 @@ module.exports = {
 				result = entries?.rows;
 			}
 			catch (error) {
-				console.error(`Error selecting serverId ${serverId}\n${error}`);
+				console.error(`${dateString()} - Error selecting serverId ${serverId}`, error);
 			}
 
 			await client.end();
 		}
 		else {
-			console.log('Invalid database client in `selectServer`.');
+			console.log(dateString() + ' - Invalid database client in `selectServer`.');
 		}
 		return result;
 	},
@@ -61,16 +62,16 @@ module.exports = {
 			try {
 				const query = `INSERT INTO servers(serverid, name, botid) VALUES ($2, $3, $1);`;
 				await client.query(query, [ botId, serverId, serverName ]);
-				console.log(`Inserted server "${serverName}"`);
+				console.log(`${dateString()} - Inserted server "${serverName}"`);
 				result = true;
 			}
 			catch (error) {
-				console.error(`Error inserting serverId ${serverId}\n${error}`);
+				console.error(`${dateString()} - Error inserting serverId ${serverId}`, error);
 			}
 			await client.end();
 		}
 		else {
-			console.log('Invalid database client in `insertServer`.');
+			console.log(dateString() + ' - Invalid database client in `insertServer`.');
 		}
 		return result;
 	},
@@ -83,16 +84,16 @@ module.exports = {
 			try {
 				const query = `DELETE FROM servers WHERE botid = $1 AND serverid = $2;`;
 				await client.query(query, [ botId, serverId ]);
-				console.log(`Removed server with id "${serverId}"`);
+				console.log(`${dateString()} - Removed server with id "${serverId}"`);
 				result = true;
 			}
 			catch (error) {
-				console.log(`Error deleting serverId ${serverId}\n${error}`);
+				console.error(`${dateString()} - Error deleting serverId ${serverId}`, error);
 			}
 			await client.end();
 		}
 		else {
-			console.log('Invalid database client in `removeServer`.');
+			console.log(dateString() + ' - Invalid database client in `removeServer`.');
 		}
 		return result;
 	},
@@ -111,16 +112,16 @@ module.exports = {
 						;
 					`;
 					await client.query(query, [ botId, serverId, userId ]);
-					console.log(`Incremented bookmark count for user '${userId}' in server ${serverId}`);
+					console.log(`${dateString()} - Incremented bookmark count for user '${userId}' in server ${serverId}`);
 				}
 				catch (error) {
-					console.error(`Error incrementing bookmark count for user '${userId}' in server ${serverId}`);
+					console.error(`${dateString()} - Error incrementing bookmark count for user '${userId}' in server ${serverId}`, error);
 				}
 				await client.end();
 			}
 			else {
-				console.log('Invalid database client in `incrementBookmarks`.');
+				console.log(dateString() + ' - Invalid database client in `incrementBookmarks`.');
 			}
 		}
-	}
+	},
 };

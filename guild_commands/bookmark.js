@@ -10,6 +10,7 @@ const { time } = require('@discordjs/builders');
 const { MessageEmbed, Message, User, MessageReaction, MessageActionRow } = require('discord.js');
 const { msgDeleteButton } = require('../src/delete-button');
 const { incrementBookmarks } = require('../db/database-access');
+const { dateString } = require('../src/utils');
 
 module.exports = {
 	data: {
@@ -41,7 +42,7 @@ module.exports = {
 
 			if (message.partial) { // if partial, fetch full message first
 				try { await message.fetch(); }
-				catch (error) { console.error('Something went wrong when fetching the message in `bookmark`', error); }
+				catch (error) { console.error(dateString() + ' - Something went wrong when fetching the message in `bookmark`', error); }
 			}
 
 			if (!(user instanceof User && message instanceof Message)) { // if arguments are not at all what they're supposed to be,
@@ -74,18 +75,17 @@ module.exports = {
 			 */
 			const deleteButtRow = new MessageActionRow().addComponents(msgDeleteButton('Delete Bookmark'));
 			user.send({ content: `Original message was sent on ${time(message.createdAt)}`, embeds: [msgEmbed], components: [deleteButtRow], files: message.attachments.toJSON() })
-				.catch(err => console.log(`Error caught sending embed of a Bookmarked message in \`${this.data.name}#execute\`\n\t${err}`));
+				.catch(err => console.error(`${dateString()} - Error caught sending embed of a Bookmarked message in \`${this.data.name}#execute\``, err));
 			if (interaction.targetType === "MESSAGE") { // interaction is a Command Interaction
 				// Send an ephemeral reply to the channel to tell the user that the bookmark was successful.
 				await interaction.editReply({ content: `OK, the message has been sent to your DM's!`, ephemeral: true });
 			}
 
-			console.log(`${new Date().toLocaleString('en-US', { timeZone: 'America/Winnipeg', timeZoneName: 'short' })} - Bookmark created by ${user.tag} in server ${interaction.server.name}`);
+			console.log(`${dateString()} - Bookmark created by ${user.tag} in server ${interaction.server.name}`);
 			incrementBookmarks(user.client.user.id, interaction.guild.id, user.id);
 		}
 		catch (error) {
-			console.error(error);
-			console.log(`Error executing \`${this.data.name}\` command`);
+			console.error(`${dateString()} - Error executing \`${this.data.name}\` command`, error);
 		}
 	},
 };

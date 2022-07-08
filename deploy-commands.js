@@ -11,6 +11,7 @@ const { Routes } = require('discord-api-types/v9');
 const fs = require('fs');
 const { CLIENT_ID, PROCESS_ID } = require('./client-codes.json');
 const { getServerList } = require('./db/database-access');
+const { dateString } = require('../src/utils');
 const pm2 = require('pm2');
 
 // Arrays in which to send all commands
@@ -23,27 +24,27 @@ const globalCmdFiles = fs.readdirSync('./global_commands').filter(file => file.e
 for (const file of guildCmdFiles) {
 	const command = require(`./guild_commands/${file}`);
 	try { guildCommands.push(command.data.toJSON()); }
-	catch(error) { console.error(`Error pushing ${file} file to guildCommands array`, error); }
+	catch(error) { console.error(`${dateString()} - Error pushing ${file} file to guildCommands array`, error); }
 }
 // Push all the global commands to their array
 for (const file of globalCmdFiles) {
 	const command = require(`./global_commands/${file}`);
 	try { globalCommands.push(command.data.toJSON()); }
-	catch(error) { console.error(`Error pushing ${file} file to globalCommands array`, error); }
+	catch(error) { console.error(`${dateString()} - Error pushing ${file} file to globalCommands array`, error); }
 }
 
 const rest = new REST({ version: '9' }).setToken(process.env.BOT_TOKEN_BOTMARK);
 
 (async () => {
 	try {
-		console.log('\nStarted reloading application commands.');
+		console.log(`\n${dateString()} - Started reloading application commands.`);
 
 		// Global commands
 		await rest.put(
 			Routes.applicationCommands(CLIENT_ID),
 			{ body: globalCommands },
 		);
-		console.log('- Registered global commands.');
+		console.log(dateString() + ' - - Registered global commands.');
 
 		// Guild commands
 		const guildList = await getServerList(CLIENT_ID);
@@ -53,49 +54,49 @@ const rest = new REST({ version: '9' }).setToken(process.env.BOT_TOKEN_BOTMARK);
 				Routes.applicationGuildCommands(CLIENT_ID, guild.serverid),
 				{ body: guildCommands },
 			);
-			console.log(`- Registered commands for server: ${guild.name}`);
+			console.log(`${dateString()} - - Registered commands for server: ${guild.name}`);
 		}// guild list for - end
 
-		console.log('Successfully reloaded application commands.');
+		console.log(dateString() + ' - Successfully reloaded application commands.');
 	}
 	catch (error) {
-		console.error('Something went wrong when reloading application commands.', error);
+		console.error(dateString() + ' - Something went wrong when reloading application commands.', error);
 	}
 })();
 
 // pm2 restart app
 setTimeout(() => {
-	console.log(`\nAttempting to connect to pm2 to restart '${PROCESS_ID}' process...`);
+	console.log(`\n${dateString()} - Attempting to connect to pm2 to restart '${PROCESS_ID}' process...`);
 
 	// connect to pm2 process manager
 	pm2.connect((err) => {
 		if (err) {
-			console.error(`\n\nSomething went wrong when connecting to '${PROCESS_ID}' process from deploy-commands.js.`, err);
+			console.error(`\n\n${dateString()} - Something went wrong when connecting to '${PROCESS_ID}' process from deploy-commands.js.`, err);
 			process.exit(2);
 		}
 
 		// Fetch the list of processes managed by pm2
 		pm2.list((err, list) => {
 			if (err) {
-				console.error(`\n\nSomething went wrong when fetching the list of pm2 processes in deploy-commands.js.`, err);
+				console.error(`\n\n${dateString()} - Something went wrong when fetching the list of pm2 processes in deploy-commands.js.`, err);
 				process.exit(2);
 			}
 
 			// Find the process with the right name and send it the SIGUSR1 signal that will make it reboot
 			const processDescription = list.find(proc => proc.name === PROCESS_ID);
 			if (processDescription && processDescription.pm2_env.status === "online") {
-				console.log(`Now restarting ${processDescription.name} process.`);
+				console.log(`${dateString()} - Now restarting ${processDescription.name} process.`);
 				process.kill(processDescription.pid, 'SIGUSR1');
 			}
 			else {
-				console.log(`${processDescription.name} process is currently not online, no need to restart it.`);
+				console.log(`${dateString()} - ${processDescription.name} process is currently not online, no need to restart it.`);
 			}
 		});
 
 		// Disconnect from pm2
 		setTimeout(() => {
 			pm2.disconnect();
-			console.log(`Disconnected from pm2.`);
+			console.log(`${dateString()} - Disconnected from pm2.`);
 		}, 1000);
 	});
 }, 1000);
