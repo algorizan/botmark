@@ -26,8 +26,7 @@ Rubbish/
 # Procfile
 README-template.md
 misc/
-# for heroku-deployed branch only
-deploy-commands.js
+botmark_logs.txt
 
 # Windows Explorer file
 desktop.ini
@@ -131,3 +130,4 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+tempCodeRunnerFile.js
