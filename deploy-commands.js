@@ -34,6 +34,7 @@ for (const file of guildCmdFiles) {
 // }
 
 const rest = new REST({ version: '9' }).setToken(process.env.BOT_TOKEN_BOTMARK);
+const PROCESS_ID = 'botmark';
 
 (async () => {
 	try {
@@ -66,12 +67,12 @@ const rest = new REST({ version: '9' }).setToken(process.env.BOT_TOKEN_BOTMARK);
 
 // pm2 restart app
 setTimeout(() => {
-	console.log(`\n${dateString()} - Attempting to connect to pm2 to restart '${process.env.PROCESS_ID}' process...`);
+	console.log(`\n${dateString()} - Attempting to connect to pm2 to restart '${PROCESS_ID}' process...`);
 
 	// connect to pm2 process manager
 	pm2.connect((err) => {
 		if (err) {
-			console.error(`\n\n${dateString()} - Something went wrong when connecting to '${process.env.PROCESS_ID}' process from deploy-commands.js.`, err);
+			console.error(`\n\n${dateString()} - Something went wrong when connecting to '${PROCESS_ID}' process from deploy-commands.js.`, err);
 			process.exit(2);
 		}
 
@@ -83,7 +84,7 @@ setTimeout(() => {
 			}
 
 			// Find the process with the right name and send it the SIGUSR1 signal that will make it reboot
-			const processDescription = list.find(proc => proc.name === process.env.PROCESS_ID);
+			const processDescription = list.find(proc => proc.name === PROCESS_ID);
 			if (processDescription && processDescription.pm2_env.status === "online") {
 				console.log(`${dateString()} - Now restarting ${processDescription.name} process.`);
 				process.kill(processDescription.pid, 'SIGUSR1');
