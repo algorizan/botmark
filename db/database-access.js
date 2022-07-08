@@ -66,7 +66,7 @@ module.exports = {
 				;`;
 				const entries = await client.query(selectQuery, [ botId, serverId ]);
 
-				if(!entries || entries.rowCount === 0) {
+				if(!entries || !entries.rowCount) {
 					const insertQuery = `INSERT INTO servers(serverid, name, botid) VALUES ($2, $3, $1);`;
 					await client.query(insertQuery, [ botId, serverId, serverName ]);
 					console.log(`${dateString()} - Inserted server "${serverName}"`);
@@ -96,7 +96,7 @@ module.exports = {
 				;`;
 				const entries = await client.query(selectQuery, [ botId, serverId ]);
 
-				if(entries && entries.rowCount > 0) {
+				if(entries && entries.rowCount) {
 					const deleteQuery = `DELETE FROM servers WHERE botid = $1 AND serverid = $2;`;
 					await client.query(deleteQuery, [ botId, serverId ]);
 					console.log(`${dateString()} - Removed server with id "${serverId}"`);
@@ -151,7 +151,7 @@ module.exports = {
 				;`;
 				const entries = await client.query(selectQuery, [ botId, serverId, userId ]);
 
-				if (!entries || entries.rowCount === 0) {
+				if (!entries || !entries.rowCount) {
 					const insertQuery = `INSERT INTO users(serverid, botid, userid, name) VALUES($2, $1, $3, $4);`;
 					await client.query(insertQuery, [ botId, serverId, userId, username ]);
 					console.log(`${dateString()} - Inserted user ${username} into serverId ${serverId}`);
