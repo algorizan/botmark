@@ -71,7 +71,8 @@ CREATE TABLE users(
 	timeZone	VARCHAR(50) DEFAULT('America/Winnipeg'),
     bookmarkCount	INTEGER DEFAULT(0) NOT NULL,
 	PRIMARY KEY(serverId, botId, userId),
-	FOREIGN KEY(serverId, botId) REFERENCES servers(serverId, botId) ON DELETE CASCADE
+	FOREIGN KEY(serverId) REFERENCES servers(serverId) ON DELETE CASCADE
+	FOREIGN KEY(botId) REFERENCES servers(botId) ON DELETE CASCADE
 );
 
 CREATE TABLE reminders(
