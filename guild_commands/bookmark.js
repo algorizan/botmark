@@ -1,6 +1,6 @@
 /**
  * @author: Izan Cuetara Diez (a.k.a. Unstavle)
- * @version: v2.0 | 2022-07-08
+ * @version: v2.0 | 2022-08-06
  */
 
 "use strict";
@@ -10,7 +10,7 @@ const { time } = require('@discordjs/builders');
 const { MessageEmbed, Message, User, MessageReaction, MessageActionRow } = require('discord.js');
 const { msgDeleteButton } = require('../src/delete-button');
 const { incrementBookmarks, insertUser } = require('../db/database-access');
-const { dateString } = require('../src/utils');
+const { log } = require('../src/utils');
 
 module.exports = {
 	data: {
@@ -42,7 +42,7 @@ module.exports = {
 
 			if (message.partial) { // if partial, fetch full message first
 				try { await message.fetch(); }
-				catch (error) { console.error(dateString() + ' - Something went wrong when fetching the message in `bookmark`', error); }
+				catch (error) { log('- Something went wrong when fetching the message in `bookmark`', error); }
 			}
 
 			if (!(user instanceof User && message instanceof Message)) { // if arguments are not at all what they're supposed to be,
@@ -75,18 +75,18 @@ module.exports = {
 			 */
 			const deleteButtRow = new MessageActionRow().addComponents(msgDeleteButton('Delete Bookmark'));
 			user.send({ content: `Original message was sent on ${time(message.createdAt)}`, embeds: [msgEmbed], components: [deleteButtRow], files: message.attachments.toJSON() })
-				.catch(err => console.error(`${dateString()} - Error caught sending embed of a Bookmarked message in \`${this.data.name}#execute\``, err));
+				.catch(err => log(`Error caught sending embed of a Bookmarked message in \`${this.data.name}#execute\``, err));
 			if (interaction.targetType === "MESSAGE") { // interaction is a Command Interaction
 				// Send an ephemeral reply to the channel to tell the user that the bookmark was successful.
 				await interaction.editReply({ content: `OK, the message has been sent to your DM's!`, ephemeral: true });
 			}
 
-			console.log(`${dateString()} - Bookmark created by ${user.tag} in server ${message.guild.name}`);
+			log(`Bookmark created by ${user.tag} in server ${message.guild.name}`);
 			await insertUser(message.guildId, user.id, user.tag);
 			await incrementBookmarks(message.guildId, user.id);
 		}
 		catch (error) {
-			console.error(`${dateString()} - Error executing \`${this.data.name}\` command`, error);
+			log(`Error executing \`${this.data.name}\` command`, error);
 		}
 	},
 };
