@@ -27,6 +27,7 @@ Rubbish/
 README-template.md
 misc/
 botmark_logs.txt
+*query.pgsql
 
 # Windows Explorer file
 desktop.ini

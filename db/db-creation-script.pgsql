@@ -44,7 +44,7 @@ CREATE TABLE daily_quotes(
 	quoteColor	CHAR(7) DEFAULT('#bf5ae6'),
 	timeZone	VARCHAR(50) DEFAULT('America/Winnipeg'),
 	PRIMARY KEY(serverId, botId),
-	FOREIGN KEY(serverId, botId) REFERENCES servers(serverId, botId) ON DELETE CASCADE
+	FOREIGN KEY(serverId, botId) REFERENCES servers(serverId, botId) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE fun_reminders(
@@ -58,7 +58,7 @@ CREATE TABLE fun_reminders(
 	funRemindersRoles	CHAR(18)[],
 	timeRange	VARCHAR(11) DEFAULT(NULL),
 	PRIMARY KEY(serverId, botId, name),
-	FOREIGN KEY(serverId, botId) REFERENCES servers(serverId, botId) ON DELETE CASCADE
+	FOREIGN KEY(serverId, botId) REFERENCES servers(serverId, botId) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE users(
@@ -71,7 +71,8 @@ CREATE TABLE users(
 	timeZone	VARCHAR(50) DEFAULT('America/Winnipeg'),
     bookmarkCount	INTEGER DEFAULT(0) NOT NULL,
 	PRIMARY KEY(serverId, botId, userId),
-	FOREIGN KEY(serverId, botId) REFERENCES servers(serverId, botId) ON DELETE CASCADE
+	FOREIGN KEY(serverId) REFERENCES servers(serverId) ON DELETE CASCADE ON UPDATE CASCADE
+	FOREIGN KEY(botId) REFERENCES servers(botId) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE reminders(
@@ -83,7 +84,7 @@ CREATE TABLE reminders(
 	date	CHAR(24) NOT NULL,
 	action	VARCHAR(300) NOT NULL,
 	PRIMARY KEY(reminderId, userId, serverId, botId),
-	FOREIGN KEY(serverId, botId, userId) REFERENCES users(serverId, botId, userId) ON DELETE CASCADE
+	FOREIGN KEY(serverId, botId, userId) REFERENCES users(serverId, botId, userId) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE recurrent_reminders(
@@ -98,7 +99,7 @@ CREATE TABLE recurrent_reminders(
 	startMark	INTEGER NOT NULL,
 	timeRange	VARCHAR(11) DEFAULT(NULL),
 	PRIMARY KEY(reminderId, userId, serverId, botId),
-	FOREIGN KEY(serverId, botId, userId) REFERENCES users(serverId, botId, userId) ON DELETE CASCADE
+	FOREIGN KEY(serverId, botId, userId) REFERENCES users(serverId, botId, userId) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE ranking(
@@ -107,7 +108,7 @@ CREATE TABLE ranking(
 	userId	CHAR(18) NOT NULL,
 	points	INTEGER DEFAULT(0),
 	PRIMARY KEY(serverId, botId, userId),
-	FOREIGN KEY(serverId, botId, userId) REFERENCES users(serverId, botId, userId) ON DELETE CASCADE
+	FOREIGN KEY(serverId, botId, userId) REFERENCES users(serverId, botId, userId) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 

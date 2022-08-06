@@ -2,7 +2,7 @@
 
 /**
  * @author: Izan Cuetara Diez (a.k.a. Unstavle)
- * @version: v2.0 | 2022-07-08
+ * @version: v2.0 | 2022-08-06
  */
 
 "use strict";
@@ -12,7 +12,7 @@ const fs = require('fs');
 const db = require('./db/database-access');
 const { Client, Collection, Intents } = require('discord.js'); // Import the discord.js module.
 const { deleteMsg } = require('./src/delete-button');
-const { dateString } = require('./src/utils');
+const { dateString, log } = require('./src/utils');
 
 // Array with bot's needed Intents
 const BOT_INTENTS = [
@@ -39,7 +39,7 @@ client.commands = new Collection();
 // for (const file of cmdFiles) {
 // 	const command = require(`./global_commands/${file}`);
 // 	try { client.commands.set(command.data.name, command); }
-// 	catch (error) { console.error(`${dateString()} - Error pushing ${file}`, error); }
+// 	catch (error) { log(`Error pushing ${file}`, error); }
 // }// Set global commands into Collection - end
 
 // Guild commands
@@ -48,7 +48,7 @@ const guildCmdFiles = fs.readdirSync('./guild_commands').filter(file => file.end
 for (const file of guildCmdFiles) {
 	const command = require(`./guild_commands/${file}`);
 	try { client.commands.set(command.data.name, command); }
-	catch (error) { console.error(`${dateString()} - Error pushing ${file}`, error); }
+	catch (error) { log(`Error pushing ${file}`, error); }
 }// Set guild commands into Collection - end
 
 
@@ -60,7 +60,7 @@ client.login(process.env.BOT_TOKEN_BOTMARK);
 // On log in
 client.on('ready', async () => {
 	process.send('ready');
-	console.log(`\n\nLogged in as ${client.user.tag}! \nOn ${dateString()}\n`);
+	console.log(`\n\nLogged in as ${client.user.tag}! \nOn ${dateString}\n`);
 	client.user.setPresence({
 		status: 'online',
 		activities: [{
@@ -68,7 +68,7 @@ client.on('ready', async () => {
 			type: 'WATCHING',
 		}]
 	});
-        // console.log(client.user.presence);
+    // console.log(client.user.presence);
 	console.log(
 		`ClientPresence {
 			status: ${client.user.presence.status}
@@ -90,7 +90,7 @@ client.on('ready', async () => {
 				}
 			}
 			catch (error) {
-				console.error(`${dateString()} - Error inserting server into db during login check.`, error);
+				log(`Error inserting server into db during login check.`, error);
 			}
 		}
 	});// guilds cache forEach - end
@@ -105,13 +105,13 @@ client.on('interactionCreate', async interaction => {
 				await command.execute(interaction);
 			}
 			catch (error) {
-				console.error(`${dateString()} - Error executing Application command '${interaction.commandName}' requested by user: ${interaction.user.tag}, in server: ${interaction.guild.name}`, error);
+				log(`Error executing Application command '${interaction.commandName}' requested by user: ${interaction.user.tag}, in server: ${interaction.guild.name}`, error);
 				await interaction.reply({ content: '```fix\nThere was an error while executing this command!\nPlease try again later.\n```', ephemeral: true })
-					.catch(err => console.error(`${dateString()} - Error replying to Application Command interaction with error message`, err));
+					.catch(err => log(`Error replying to Application Command interaction with error message`, err));
 			}
 		}
 		else // if command null
-			console.log(`${dateString()} - Command not found corresponding to \`${interaction.commandName}\``);
+			log(`Command not found corresponding to \`${interaction.commandName}\``);
 	}// if MessageCommand - end
 	else if (interaction.isButton()) {
 		if (interaction.customId === 'deleteMsg') {
@@ -127,7 +127,7 @@ client.on('messageReactionAdd', async (reaction, user) => {
 			await reaction.fetch();
 		}
 		catch (error) {
-			console.error(`${dateString()} - Something went wrong when fetching the PartialMessageReaction`, error);
+			log(`Something went wrong when fetching the PartialMessageReaction`, error);
 			return;
 		}
 	}// partial - end
@@ -136,13 +136,12 @@ client.on('messageReactionAdd', async (reaction, user) => {
         // if the reaction is a :bookmark: or a :bookmark_tabs: emoji (respectively), execute the bookmark command
 		if (reaction.emoji.identifier === "%F0%9F%94%96" || reaction.emoji.identifier === "%F0%9F%93%91") {
 			try {
-				// console.log(`${dateString()} - Bookmark requested by user ${user.tag}`);
 				require('./guild_commands/bookmark').execute({ reaction: reaction, user: user });
 			}
 			catch (error) {
-				console.error(`${dateString()} - Error executing Application command 'bookmark' requested by user: ${user.tag}, in server: ${reaction.message.guild.name}`, error);
+				log(`Error executing Application command 'bookmark' requested by user: ${user.tag}, in server: ${reaction.message.guild.name}`, error);
 				user.send('```diff\n- There was an error while executing bookmark command from emoji reaction!\n- Please try again later.\n```')
-					.catch(err => console.error(`${dateString()} - Error notifying user that reaction bookmark was unsuccessful`, err));
+					.catch(err => log(`Error notifying user that reaction bookmark was unsuccessful`, err));
 			}
 		} // if bookmark emojis - end
 	} // if in guild and not bot - end
@@ -151,34 +150,40 @@ client.on('messageReactionAdd', async (reaction, user) => {
 // Bot joins a new guild (server)
 client.on('guildCreate', async guild => {
 	try {
-		console.log(`${dateString()} - Joined server: ${guild.name}`);
-		const guildList = await db.getServerList();
-		if (!guildList || guildList.find(g => g.serverid === guild.id)) {
-			await db.insertServer(guild.id, guild.name);
+		log(`Joined server: ${guild.name}`);
+
+		const added = await db.insertServer(guild.id, guild.name);
+		if (added) {
+			log(`Successfully added server to database!`);
 			deployCommands();
+		}
+		else {
+			log(`Failed to add server to database.`);
 		}
 	}
 	catch (error) {
-		console.error(dateString() + ' - Error adding server to database after joining guild.', error);
+		log('Error adding server to database after joining.', error);
 	}
 }); // on guildCreate - end
 
 // Bot leaves a guild (server)
 client.on('guildDelete', async guild => {
 	try {
-		const guildList = await db.getServerList();
-		if (!guildList || guildList.find(g => g.serverid === guild.id)) {
-			await db.removeServer(guild.id);
-		}
-		console.log(`${dateString()} - Left server: ${guild.name}`);
+		log(`Left server: ${guild.name}`);
+
+		const removed = await db.removeServer(guild.id);
+		if (removed)
+			log(`Successfully removed server from database!`);
+		else
+			log(`Failed removing server from database.`);
 	}
 	catch (error) {
-		console.error(dateString() + ' - Error removing server from database after leaving guild.', error);
+		log('Error removing server from database after leaving.', error);
 	}
 }); // on guildCreate - end
 
 // On error
-client.once('error', error => console.error(`${dateString()} - Client ran into an error!`, error));
+client.once('error', error => log(`Client ran into an error!`, error));
 
 
 // ----------------- SIGNALS -----------------------------------------------------------------------------------------------------------
@@ -187,33 +192,9 @@ client.once('error', error => console.error(`${dateString()} - Client ran into a
 process.once('SIGINT', () => { logout(); });
 process.once('SIGTERM', () => { logout(); });
 function logout() {
-	console.log(`${dateString()} - Client logging out and self-destructing...`);
+	log(`Client logging out and self-destructing...`);
 	client.destroy();
 }// logout - end
-
-// Signal handling for after deploying commands
-process.on('SIGUSR1', () => {
-	console.log(`\n${dateString()} - Rebooting '${process.env.PROCESS_ID}' process...`);
-
-    // pm2 restart app
-	setTimeout(() => {
-		const pm2 = require('pm2');// Import module for pm2
-		pm2.connect((err) => {
-			if (err) {
-				console.error(`\n${dateString()} - Something went wrong when connecting to pm2 process.`, err);
-				process.exit(2);
-			}
-
-			pm2.restart(process.env.PROCESS_ID, (err) => {
-				pm2.disconnect();
-				if (err) {
-					console.error(`\n${dateString()} - Something went wrong when restarting and disconnecting from pm2 process.`, err);
-					throw err;
-				}
-			});
-		});
-	}, 1000);
-});// SIGUSR1 - end
 
 
 // ----------------- FUNCTIONS -----------------------------------------------------------------------------------------------------------
@@ -221,10 +202,38 @@ process.on('SIGUSR1', () => {
 // run the deplot-commands.js file, for when joining a new server
 function deployCommands() {
 	try {
-		console.log(`${dateString()} - Running deploy-commands.js file...`);
-		require('child_process').fork('./deploy-commands.js');
+		log(`Running deploy-commands.js file...`);
+		require('child_process').fork('./deploy-commands.js', { stdio: 'inherit' });
 	}
 	catch (error) {
-		console.error(`\n${dateString()} - Error forking deployCommands()`, error);
+		log(`Error forking deployCommands()`, error, 1);
 	}
 }// deployCommands - end
+
+// ---------------- EXPORTS --------------------------------------------------------------------------------------------------------------
+
+module.exports = {
+	// Rebooting the bot after child process is done deploying commands
+	reboot() {
+		log(`Rebooting '${process.env.PROCESS_ID}' process...`, null, 1);
+
+		// pm2 restart app
+		setTimeout(() => {
+			const pm2 = require('pm2');// Import module for pm2
+			pm2.connect((err) => {
+				if (err) {
+					log(`Something went wrong when connecting to pm2 process.`, err, 1);
+					process.exit(2);
+				}
+
+				pm2.restart(process.env.PROCESS_ID, (err) => {
+					pm2.disconnect();
+					if (err) {
+						log(`Something went wrong when restarting and disconnecting from pm2 process.`, err, 1);
+						throw err;
+					}
+				});
+			});
+		}, 1000);
+	}
+};
