@@ -68,11 +68,11 @@ module.exports = {
 					const insertQuery = `INSERT INTO servers(serverid, name, botid) VALUES ($2, $3, $1);`;
 					await client.query(insertQuery, [ process.env.CLIENT_ID, serverId, serverName ]);
 					console.log(`${dateString()} - Inserted server "${serverName}"`);
+					result = true;
 				}
 				else {
 					console.log(`${dateString()} - Server "${serverName}" was found already in database`);
 				}
-				result = true;
 			}
 			catch (error) {
 				console.error(`${dateString()} - Error inserting serverId ${serverId}`, error);
@@ -101,11 +101,11 @@ module.exports = {
 					const deleteQuery = `DELETE FROM servers WHERE botid = $1 AND serverid = $2;`;
 					await client.query(deleteQuery, [ process.env.CLIENT_ID, serverId ]);
 					console.log(`${dateString()} - Removed server with id "${serverId}"`);
+					result = true;
 				}
 				else {
 					console.log(`${dateString()} - Server with id "${serverId}" was not found in database`);
 				}
-				result = true;
 			}
 			catch (error) {
 				console.error(`${dateString()} - Error deleting serverId ${serverId}`, error);

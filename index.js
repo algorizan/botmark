@@ -136,7 +136,6 @@ client.on('messageReactionAdd', async (reaction, user) => {
         // if the reaction is a :bookmark: or a :bookmark_tabs: emoji (respectively), execute the bookmark command
 		if (reaction.emoji.identifier === "%F0%9F%94%96" || reaction.emoji.identifier === "%F0%9F%93%91") {
 			try {
-				// console.log(`${dateString()} - Bookmark requested by user ${user.tag}`);
 				require('./guild_commands/bookmark').execute({ reaction: reaction, user: user });
 			}
 			catch (error) {
@@ -152,28 +151,34 @@ client.on('messageReactionAdd', async (reaction, user) => {
 client.on('guildCreate', async guild => {
 	try {
 		console.log(`${dateString()} - Joined server: ${guild.name}`);
-		const guildList = await db.getServerList();
-		if (!guildList || guildList.find(g => g.serverid === guild.id)) {
-			await db.insertServer(guild.id, guild.name);
+
+		const added = await db.insertServer(guild.id, guild.name);
+		if (added) {
+			console.log(`${dateString()} - Successfully added server to database!`);
 			deployCommands();
+		}
+		else {
+			console.log(`${dateString()} - Failed to add server to database.`);
 		}
 	}
 	catch (error) {
-		console.error(dateString() + ' - Error adding server to database after joining guild.', error);
+		console.error(dateString() + ' - Error adding server to database after joining.', error);
 	}
 }); // on guildCreate - end
 
 // Bot leaves a guild (server)
 client.on('guildDelete', async guild => {
 	try {
-		const guildList = await db.getServerList();
-		if (!guildList || guildList.find(g => g.serverid === guild.id)) {
-			await db.removeServer(guild.id);
-		}
 		console.log(`${dateString()} - Left server: ${guild.name}`);
+
+		const removed = await db.removeServer(guild.id);
+		if (removed)
+			console.log(`${dateString()} - Successfully removed server from database!`);
+		else
+			console.log(`${dateString()} - Failed removing server from database.`);
 	}
 	catch (error) {
-		console.error(dateString() + ' - Error removing server from database after leaving guild.', error);
+		console.error(dateString() + ' - Error removing server from database after leaving.', error);
 	}
 }); // on guildCreate - end
 
