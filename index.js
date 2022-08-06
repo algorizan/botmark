@@ -191,30 +191,6 @@ function logout() {
 	client.destroy();
 }// logout - end
 
-// Signal handling for after deploying commands
-process.on('SIGUSR1', () => {
-	console.log(`\n${dateString()} - Rebooting '${process.env.PROCESS_ID}' process...`);
-
-    // pm2 restart app
-	setTimeout(() => {
-		const pm2 = require('pm2');// Import module for pm2
-		pm2.connect((err) => {
-			if (err) {
-				console.error(`\n${dateString()} - Something went wrong when connecting to pm2 process.`, err);
-				process.exit(2);
-			}
-
-			pm2.restart(process.env.PROCESS_ID, (err) => {
-				pm2.disconnect();
-				if (err) {
-					console.error(`\n${dateString()} - Something went wrong when restarting and disconnecting from pm2 process.`, err);
-					throw err;
-				}
-			});
-		});
-	}, 1000);
-});// SIGUSR1 - end
-
 
 // ----------------- FUNCTIONS -----------------------------------------------------------------------------------------------------------
 
@@ -228,3 +204,31 @@ function deployCommands() {
 		console.error(`\n${dateString()} - Error forking deployCommands()`, error);
 	}
 }// deployCommands - end
+
+// ---------------- EXPORTS --------------------------------------------------------------------------------------------------------------
+
+module.exports = {
+	// Rebooting the bot after child process is done deploying commands
+	reboot() {
+		console.log(`\n${dateString()} - Rebooting '${process.env.PROCESS_ID}' process...`);
+
+		// pm2 restart app
+		setTimeout(() => {
+			const pm2 = require('pm2');// Import module for pm2
+			pm2.connect((err) => {
+				if (err) {
+					console.error(`\n${dateString()} - Something went wrong when connecting to pm2 process.`, err);
+					process.exit(2);
+				}
+
+				pm2.restart(process.env.PROCESS_ID, (err) => {
+					pm2.disconnect();
+					if (err) {
+						console.error(`\n${dateString()} - Something went wrong when restarting and disconnecting from pm2 process.`, err);
+						throw err;
+					}
+				});
+			});
+		}, 1000);
+	}
+};

@@ -88,7 +88,7 @@ setTimeout(() => {
 			const processDescription = list.find(proc => proc.name === PROCESS_ID);
 			if (processDescription && processDescription.pm2_env.status === "online") {
 				console.log(`${dateString()} - Now restarting ${processDescription.name} process.`);
-				process.kill(processDescription.pid, 'SIGUSR1');
+				require('./index.js').reboot();
 			}
 			else {
 				console.log(`${dateString()} - ${processDescription.name} process is currently not online, no need to restart it.`);
