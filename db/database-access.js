@@ -37,8 +37,6 @@ module.exports = {
 					;
 				`;
 				const entries = await client.query(query, [ process.env.CLIENT_ID, serverId ]);
-				// console.log(Object.keys(entries.rows?.[0]).join('\t'));
-				// console.log(`${entries.rows.map((r) => Object.values(r).join('\t')).join('\n')}`);
 
 				result = entries?.rows;
 			}
@@ -115,7 +113,7 @@ module.exports = {
 	},
 
 	async incrementBookmarks(serverId, userId) {
-		if (userId !== '256116869969215491') { // except for me, I don't count >:(
+		if (userId !== '256116869969215491') { // except for me, I don't count
 			const client = await getClient();
 			if (client instanceof pg.Client) {
 				try {
