@@ -198,7 +198,7 @@ function logout() {
 function deployCommands() {
 	try {
 		console.log(`${dateString()} - Running deploy-commands.js file...`);
-		require('child_process').fork('./deploy-commands.js');
+		require('child_process').fork('./deploy-commands.js', { stdio: 'inherit' });
 	}
 	catch (error) {
 		console.error(`\n${dateString()} - Error forking deployCommands()`, error);
