@@ -60,7 +60,7 @@ client.login(process.env.BOT_TOKEN_BOTMARK);
 // On log in
 client.on('ready', async () => {
 	process.send('ready');
-	console.log(`\n\nLogged in as ${client.user.tag}! \nOn ${dateString()}\n`);
+	console.log(`\n\nLogged in as ${client.user.tag}! \nOn ${dateString}\n`);
 	client.user.setPresence({
 		status: 'online',
 		activities: [{

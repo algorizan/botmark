@@ -6,14 +6,13 @@
 
 "use strict";
 
-
 module.exports = {
-	dateString() {
-		return new Date().toLocaleString('en-US', { timeZone: 'America/Winnipeg', timeZoneName: 'short' });
-	},
+	dateString: new Date().toLocaleString('en-US', { timeZone: 'America/Winnipeg', timeZoneName: 'short' }),
 
 	log(string, error, newlines) {
-		const output = `${'\n'.repeat(Math.max(0, newlines))}${this.dateString()} - ${string}`;
+		const date = new Date().toLocaleString('en-US', { timeZone: 'America/Winnipeg', timeZoneName: 'short' });
+
+		const output = `${'\n'.repeat(Math.max(0, newlines))}${date} - ${string}`;
 		if (!error) {
 			console.log(output);
 		}
