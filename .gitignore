@@ -28,6 +28,7 @@ README-template.md
 misc/
 botmark_logs.txt
 *query.pgsql
+*uncensored.png
 
 # Windows Explorer file
 desktop.ini
