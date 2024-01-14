@@ -1,8 +1,9 @@
 /* eslint-disable no-magic-numbers */
 
 /**
- * @author: Izan Cuetara Diez (a.k.a. Unstavle)
+ * @author: Izan Cuetara Diez (a.k.a. algorizan)
  * @version: v2.0 | 2022-08-06
+ * @fileoverview Botmark's index file
  */
 
 "use strict";
@@ -64,8 +65,8 @@ client.on('ready', async () => {
 	client.user.setPresence({
 		status: 'online',
 		activities: [{
-			name: 'out for bookmarks', // `out for bookmarks in ${GUILD_LIST.length} servers`
 			type: 'WATCHING',
+			name: 'out for bookmarks', // TODO `out for bookmarks in ${GUILD_LIST.length} servers`
 		}]
 	});
     // console.log(client.user.presence);
@@ -73,8 +74,8 @@ client.on('ready', async () => {
 		`ClientPresence {
 			status: ${client.user.presence.status}
 			activity: {
-				name: '${client.user.presence.activities[0].name}'
 				type: '${client.user.presence.activities[0].type}'
+				name: '${client.user.presence.activities[0].name}'
 			}
 		}`
 	);

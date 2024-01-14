@@ -1,7 +1,8 @@
 /* eslint-disable no-magic-numbers */
 /**
- * @author: Izan Cuetara Diez (a.k.a. Unstavle)
+ * @author: Izan Cuetara Diez (a.k.a. algorizan)
  * @version: v2.0 | 2022-08-06
+ * @fileoverview Botmark's utility functions
  */
 
 "use strict";

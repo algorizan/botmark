@@ -4,7 +4,7 @@
   "description": "Discord bot Botmark.",
   "author": "Izan Cuetara Diez",
   "license": "",
-  "homepage": "https://github.com/Unstavle/botmark#readme",
+  "homepage": "https://github.com/algorizan/botmark#readme",
   "main": "index.js",
   "engines": {
     "node": "16.x",
@@ -17,10 +17,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Unstavle/botmark.git"
+    "url": "git+https://github.com/algorizan/botmark.git"
   },
   "bugs": {
-    "url": "https://github.com/Unstavle/botmark/issues"
+    "url": "https://github.com/algorizan/botmark/issues"
   },
   "keywords": [
     "discord.js",
