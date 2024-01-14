@@ -1,6 +1,7 @@
 /**
  * @author: Izan Cuetara Diez (a.k.a. algorizan)
  * @version: v2.0 | 2022-08-06
+ * @fileoverview Botmark's delete button code
  */
 
 "use strict";
