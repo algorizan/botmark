@@ -10,7 +10,7 @@
 const { time } = require('@discordjs/builders');
 const { MessageEmbed, Message, User, MessageReaction, MessageActionRow } = require('discord.js');
 const { msgDeleteButton } = require('../src/delete-button');
-const { incrementBookmarks, insertUser } = require('../db/database-access');
+const { incrementBookmarks } = require('../db/database-access');
 const { log } = require('../src/utils');
 
 module.exports = {
@@ -83,7 +83,6 @@ module.exports = {
 			}
 
 			log(`Bookmark created by ${user.tag} in server ${message.guild.name}`);
-			await insertUser(message.guildId, user.id, user.tag);
 			await incrementBookmarks(message.guildId, user.id);
 		}
 		catch (error) {

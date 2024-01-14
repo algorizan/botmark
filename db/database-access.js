@@ -1,12 +1,12 @@
 /**
  * @author: Izan Cuetara Diez (a.k.a. algorizan)
- * @version: v2.0 | 2022-08-06
+ * @version: v2.1 | 2024-01-14
  */
 
 "use strict";
 
 const pg = require('pg');
-const { getClient } = require('./database-connection');
+const { getClient } = require('./db-connection');
 const { log } = require('../src/utils');
 
 module.exports = {
@@ -15,7 +15,7 @@ module.exports = {
 		const client = await getClient();
 
 		if (client instanceof pg.Client) {
-			const entries = await client.query('SELECT serverid, name FROM servers WHERE botid = $1', [process.env.CLIENT_ID]);
+			const entries = await client.query('SELECT serverid, name FROM server');
 			result = entries?.rows;
 		}
 		else {
@@ -32,11 +32,11 @@ module.exports = {
 		if (client instanceof pg.Client) {
 			try {
 				const query = `
-					SELECT serverid, name FROM servers
-					WHERE botid = $1 AND serverid = $2
+					SELECT serverid, name FROM server
+					WHERE serverid = $1
 					;
 				`;
-				const entries = await client.query(query, [ process.env.CLIENT_ID, serverId ]);
+				const entries = await client.query(query, [serverId]);
 
 				result = entries?.rows;
 			}
@@ -59,14 +59,14 @@ module.exports = {
 		if (client instanceof pg.Client) {
 			try {
 				const selectQuery = `
-					SELECT serverid, botid FROM servers
-					WHERE botid = $1 AND serverid = $2
+					SELECT serverid FROM server
+					WHERE serverid = $1
 				;`;
-				const entries = await client.query(selectQuery, [ process.env.CLIENT_ID, serverId ]);
+				const entries = await client.query(selectQuery, [serverId]);
 
 				if(!entries || !entries.rowCount) {
-					const insertQuery = `INSERT INTO servers(serverid, name, botid) VALUES ($2, $3, $1);`;
-					await client.query(insertQuery, [ process.env.CLIENT_ID, serverId, serverName ]);
+					const insertQuery = `INSERT INTO server(serverid, name) VALUES ($1, $2);`;
+					await client.query(insertQuery, [ serverId, serverName ]);
 					log(`Inserted server "${serverName}"`);
 					result = true;
 				}
@@ -92,14 +92,14 @@ module.exports = {
 		if (client instanceof pg.Client) {
 			try {
 				const selectQuery = `
-					SELECT serverid, botid FROM servers
-					WHERE botid = $1 AND serverid = $2
+					SELECT serverid FROM server
+					WHERE serverid = $1
 				;`;
-				const entries = await client.query(selectQuery, [ process.env.CLIENT_ID, serverId ]);
+				const entries = await client.query(selectQuery, [serverId]);
 
 				if(entries && entries.rowCount) {
-					const deleteQuery = `DELETE FROM servers WHERE botid = $1 AND serverid = $2;`;
-					await client.query(deleteQuery, [ process.env.CLIENT_ID, serverId ]);
+					const deleteQuery = `DELETE FROM server WHERE serverid = $1;`;
+					await client.query(deleteQuery, [serverId]);
 					log(`Removed server with id "${serverId}"`);
 					result = true;
 				}
@@ -123,18 +123,12 @@ module.exports = {
 			const client = await getClient();
 			if (client instanceof pg.Client) {
 				try {
-					const queryServers = `
-						UPDATE servers SET bookmarkcount = bookmarkcount + 1
-						WHERE botid = $1 AND serverid = $2
+					const queryServer = `
+						UPDATE server SET bookmarkcount = bookmarkcount + 1
+						WHERE serverid = $1
 						;
 					`;
-					await client.query(queryServers, [ process.env.CLIENT_ID, serverId ]);
-					const queryUsers = `
-						UPDATE users SET bookmarkcount = bookmarkcount + 1
-						WHERE botid = $1 AND serverid = $2 AND userid = $3
-						;
-					`;
-					await client.query(queryUsers, [ process.env.CLIENT_ID, serverId, userId ]);
+					await client.query(queryServer, [serverId]);
 					log(`Incremented bookmark count for user '${userId}' in serverId ${serverId}`);
 				}
 				catch (error) {
@@ -145,32 +139,6 @@ module.exports = {
 			else {
 				log('- Invalid database client in `incrementBookmarks`.');
 			}
-		}
-	},
-
-	async insertUser(serverId, userId, username) {
-		const client = await getClient();
-		if (client instanceof pg.Client) {
-			try {
-				const selectQuery = `
-					SELECT serverid, botid, userid FROM users
-					WHERE botid = $1 AND serverid = $2 AND userid = $3
-				;`;
-				const entries = await client.query(selectQuery, [ process.env.CLIENT_ID, serverId, userId ]);
-
-				if (!entries || !entries.rowCount) {
-					const insertQuery = `INSERT INTO users(serverid, botid, userid, name) VALUES($2, $1, $3, $4);`;
-					await client.query(insertQuery, [ process.env.CLIENT_ID, serverId, userId, username ]);
-					log(`Inserted user ${username} into serverId ${serverId}`);
-				}
-			}
-			catch (error) {
-				log(`Error inserting user ${username} in serverId ${serverId}`, error);
-			}
-			await client.end();
-		}
-		else {
-			log(`Invalid database client in \`insertUser\`.`);
 		}
 	},
 };

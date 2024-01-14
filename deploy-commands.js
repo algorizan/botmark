@@ -50,7 +50,7 @@ const PROCESS_ID = 'botmark';
 		// log('- Registered global commands.');
 
 		// Guild commands
-		const guildList = await getServerList(process.env.CLIENT_ID);
+		const guildList = await getServerList();
 		for (const guild of guildList) {
 			// for all files in /guild_commands
 			await rest.put(
