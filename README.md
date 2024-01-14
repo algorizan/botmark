@@ -58,7 +58,7 @@ However, after 1 minute, the *Undo* button will expire and the Bookmark will hav
 ***
 <br/>
 
-# Links
+<!-- # Links
 ## [**<u>Add Botmark to your server</u>**](https://discord.com/api/oauth2/authorize?client_id=911410913138081863&permissions=66560&scope=applications.commands%20bot)
 
 ***
@@ -72,4 +72,4 @@ However, after 1 minute, the *Undo* button will expire and the Bookmark will hav
 
 <br/>
 
-***
+*** -->
