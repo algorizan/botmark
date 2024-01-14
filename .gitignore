@@ -29,7 +29,7 @@ README-template.md
 misc/
 *query.pgsql
 *uncensored.png
-db/HerokuDataclips/*
+db/HerokuDataclips/
 
 # Windows Explorer file
 desktop.ini
