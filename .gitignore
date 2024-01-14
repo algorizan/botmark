@@ -27,9 +27,14 @@ Rubbish/
 # Procfile
 README-template.md
 misc/
-*query.pgsql
 *uncensored.png
+
+# Database stuff
+db-connection.js
+*query.pgsql
+*script.pgsql
 db/HerokuDataclips/
+*db.json
 
 # Windows Explorer file
 desktop.ini
